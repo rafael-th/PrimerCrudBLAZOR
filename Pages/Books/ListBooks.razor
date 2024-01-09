@@ -1,0 +1,69 @@
+﻿@page "/books"
+@using BlazorCrud.Models
+@using BlazorCrud.Repository
+@inject IRepository Repository
+
+<h1>CRUD con BLAZOR SERVER Y MSSQLLOCALDB </h1>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-dark"> Lista de Libros</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Descripción</th>
+                    <th>Autor</th>
+                    <th>Páginas</th>
+                    <th>Precio</th>
+                    <th>Fecha de Creación </th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>            
+            <tbody>
+                @foreach (var book in bookList)
+                {
+                    <tr>
+                        <td>@book.Id</td>
+                        <td>@book.Title</td>
+                        <td>@book.Description</td>
+                        <td>@book.Author</td>
+                        <td>@book.Pages</td>
+                        <td>@book.Price</td>
+                        <td>@book.CreateDate</td>
+                        <td>
+                            <a href="edit-book/@book.Id" class="btn btn-success btn-sm"> <span class="oi oi-plus" aria-hidden="true"></span> Editar</a>
+                            <button @onclick="@( () => DeleteBook(book.Id))" class="btn btn-danger btn-sm"> <span class="oi oi-delete" aria-hidden="true"></span> Borrar</button>
+                        </td>
+                    </tr>
+                }                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private List<Book> bookList = new List<Book>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookList = await Repository.GetBooks();
+    }
+
+    //Metodo para borrar libro
+    private async Task DeleteBook(int bookId)
+    {
+        await Repository.DeleteBook(bookId);
+
+        //Actualizar el modelo de libros para que recargue la lista de libros
+
+        bookList = await Repository.GetBooks();
+    }
+}

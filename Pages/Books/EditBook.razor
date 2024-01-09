@@ -1,0 +1,129 @@
+﻿@page "/edit-book/{id:int}"
+@using BlazorCrud.Models
+@using BlazorCrud.Repository
+@inject IRepository Repository
+@inject NavigationManager navigationManager
+
+<h1>CRUD con BLAZOR SERVER Y MSSQLLOCALDB </h1>
+
+<div class="card">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-dark"> Editar Libro</h2>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <EditForm Model="modelBook" OnValidSubmit="@( () => HandlerOnEditBook())">
+            <DataAnnotationsValidator></DataAnnotationsValidator> @*incluye las validaciones*@
+            <div class="container">
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Título:</label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="modelBook.Title" class="form-control" placeholder="Ingrese el título"></InputText>
+                            @*muestra el mensaje de validacion abajo del input y no arriba *@
+                            <ValidationMessage For="() => modelBook.Title"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Descripción:</label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="modelBook.Description" class="form-control" placeholder="Ingrese la descripción "></InputText>
+                            @*muestra el mensaje de validacion abajo del input y no arriba *@
+                            <ValidationMessage For="() => modelBook.Description"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Autor:</label>
+                        </div>
+                        <div class="col-6">
+                            <InputText @bind-Value="modelBook.Author" class="form-control" placeholder="Ingrese el Autor"></InputText>
+                            @*muestra el mensaje de validacion abajo del input y no arriba *@
+                            <ValidationMessage For="() => modelBook.Author"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Páginas:</label>
+                        </div>
+                        <div class="col-6">
+                            <InputNumber @bind-Value="modelBook.Pages" class="form-control" placeholder="Ingrese el número de páginas"></InputNumber>
+                            @*muestra el mensaje de validacion abajo del input y no arriba *@
+                            <ValidationMessage For="() => modelBook.Pages"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <label>Precio:</label>
+                        </div>
+                        <div class="col-6">
+                            <InputNumber @bind-Value="modelBook.Price" class="form-control" placeholder="Ingrese el precio"></InputNumber>
+                            @*muestra el mensaje de validacion abajo del input y no arriba *@
+                            <ValidationMessage For="() => modelBook.Price"></ValidationMessage>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col-2">
+                            <button type="submit" class="btn btn-success"> <span class="oi oi-cog" aria-hidden="true"></span> Actualizar Libro</button>
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-danger" @onclick="@( () => navigationManager.NavigateTo("/books"))"> <span class="oi oi-chevron-left" aria-hidden="true"></span> Volver atrás</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private Book modelBook = new Book();
+
+    [Parameter]
+    public int? Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        modelBook = await Repository.GetBookId(Id.Value);
+    }
+
+    //Metodo para actualizar un libro en BD
+    private async Task HandlerOnEditBook()
+    {
+        var editBook = await Repository.UpdateBook(Id.Value,modelBook);
+        navigationManager.NavigateTo("/books");
+
+    }
+}
+
